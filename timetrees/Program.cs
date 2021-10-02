@@ -11,7 +11,7 @@ namespace timetrees
             string timeLineFile = "..\\..\\..\\..\\timeline.csv";
             string peopleFile = "..\\..\\..\\..\\people.csv";
 
-            string[] lines = File.ReadAllLines(timeLineFile);
+            /*string[] lines = File.ReadAllLines(timeLineFile);
             foreach (var line in lines)
             {
                 Console.WriteLine(line);
@@ -23,14 +23,14 @@ namespace timetrees
             {
                 Console.WriteLine(line);
             }
-            Console.WriteLine("");
+            Console.WriteLine(""); */
 
             string[][] timeLineData = ReadData(timeLineFile);
             string[][] peopleData = ReadData(peopleFile);
-            Console.WriteLine(FindMinAndMaxDate(timeLineData));
-            Console.WriteLine("");
+            //Console.WriteLine(FindMinAndMaxDate(timeLineData));
+            //Console.WriteLine("");
             (int years, int months, int days) = DeltaDate(timeLineData);
-            Console.WriteLine($"ћежду макс и мин датами прошло: {years} лет, {months} мес€цев и {days} дней");
+            Console.WriteLine($"ћежду макс и мин датами прошло: лет: {years}, мес€цев: {months} дней: {days}");
             Console.WriteLine("");
             Console.WriteLine("»мена людей, которые родились в високосный год и их возраст не более 20 лет: ");
             GetLeapYear(peopleData);
@@ -45,6 +45,27 @@ namespace timetrees
                 var line = data[i]; // "1; »м€; 2000-06-06
                 string[] parts = line.Split(";"); //["1", "»м€ 1", "2000-06-06"]
                 splitData[i] = parts;
+            }
+            return splitData;
+        }
+
+        static object[][] ReadDataAsObject(string path)
+        {
+            string[] data = File.ReadAllLines(path);
+            object[][] splitData = new string[data.Length][];
+            for (int i = 0; i < data.Length; i++)
+            {
+                var line = data[i]; 
+                string[] parts = line.Split(";"); 
+                object[] elements = new object[parts.Length];
+                elements[0] = int.Parse(parts[0]);
+                elements[1] = parts[1];
+                elements[2] = DateTime.Parse(parts[2]);
+                if (parts.Length ==4)
+                {
+                    elements[3] = DateTime.Parse(parts[2]);
+                }
+                splitData[i] = elements;
             }
             return splitData;
         }
@@ -66,13 +87,14 @@ namespace timetrees
         {
             (DateTime maxDate, DateTime minDate) = FindMinAndMaxDate(timeline);
             TimeSpan delta = maxDate - minDate; 
-            Console.WriteLine(delta);
+            //Console.WriteLine(delta);
             DateTime diffdate = new DateTime() + delta;
-            Console.WriteLine(diffdate);
+            //Console.WriteLine(diffdate);
             diffdate = diffdate.AddYears(-1);
             diffdate = diffdate.AddMonths(-1);
             diffdate = diffdate.AddDays(-3);
-            Console.WriteLine(diffdate);
+            //Console.WriteLine(diffdate);
+            //Console.WriteLine("");
             return (diffdate.Year,diffdate.Month,diffdate.Day);
         }
 
