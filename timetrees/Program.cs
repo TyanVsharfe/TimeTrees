@@ -28,30 +28,12 @@ namespace timetrees
             string[][] timeLineData = ReadData(timeLineFile);
             string[][] peopleData = ReadData(peopleFile);
             Console.WriteLine(FindMinAndMaxDate(timeLineData));
+            Console.WriteLine("");
             (int years, int months, int days) = DeltaDate(timeLineData);
             Console.WriteLine($"ћежду макс и мин датами прошло: {years} лет, {months} мес€цев и {days} дней");
+            Console.WriteLine("");
             Console.WriteLine("»мена людей, которые родились в високосный год и их возраст не более 20 лет: ");
-
-            DateTime nowDate = DateTime.Now;
-            foreach (var line in peopleData)
-            {
-                int age;
-                DateTime birth = DateTime.Parse(line[2]);
-                DateTime deathDate = DateTime.MinValue;
-                if (line[2] == "") deathDate = DateTime.MinValue; else DateTime.ParseExact(line[2], "yyyy-mm-dd", CultureInfo.InvariantCulture);
-                if (deathDate == DateTime.MinValue)
-                {
-                    age = nowDate.Year - birth.Year;
-                    if (DateTime.Now.DayOfYear < birth.DayOfYear) age++;   //на случай, если день рождени€ уже прошЄл
-                }
-                else
-                {
-                    age = deathDate.Year - birth.Year;
-                    if (deathDate.DayOfYear < birth.DayOfYear) age++;   //на случай, если день рождени€ уже прошЄл
-                }              
-                if ((DateTime.IsLeapYear(birth.Year)) & (age < 20)) Console.WriteLine(line[1]);
-            }
-
+            GetLeapYear(peopleData);
         }
 
         static string[][] ReadData(string path)
@@ -83,7 +65,38 @@ namespace timetrees
         static (int, int, int) DeltaDate(string[][] timeline)
         {
             (DateTime maxDate, DateTime minDate) = FindMinAndMaxDate(timeline);
-            return (maxDate.Year - minDate.Year, maxDate.Month - minDate.Month, maxDate.Day - minDate.Day);
+            TimeSpan delta = maxDate - minDate; 
+            Console.WriteLine(delta);
+            DateTime diffdate = new DateTime() + delta;
+            Console.WriteLine(diffdate);
+            diffdate = diffdate.AddYears(-1);
+            diffdate = diffdate.AddMonths(-1);
+            diffdate = diffdate.AddDays(-3);
+            Console.WriteLine(diffdate);
+            return (diffdate.Year,diffdate.Month,diffdate.Day);
+        }
+
+        static void GetLeapYear(string[][] peopleData)
+        {
+            DateTime nowDate = DateTime.Now;
+            foreach (var line in peopleData)
+            {
+                int age;
+                DateTime birth = DateTime.Parse(line[2]);
+                DateTime deathDate = DateTime.MinValue;
+                if (line[2] == "") deathDate = DateTime.MinValue; else DateTime.ParseExact(line[2], "yyyy-mm-dd", CultureInfo.InvariantCulture);
+                if (deathDate == DateTime.MinValue)
+                {
+                    age = nowDate.Year - birth.Year;
+                    if (DateTime.Now.DayOfYear < birth.DayOfYear) age++;   //на случай, если день рождени€ уже прошЄл
+                }
+                else
+                {
+                    age = deathDate.Year - birth.Year;
+                    if (deathDate.DayOfYear < birth.DayOfYear) age++;   //на случай, если день рождени€ уже прошЄл
+                }              
+                if ((DateTime.IsLeapYear(birth.Year)) & (age < 20)) Console.WriteLine(line[1]);
+            }
         }
     }
 }
