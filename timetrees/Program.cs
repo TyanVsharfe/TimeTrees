@@ -5,11 +5,19 @@ using System.Globalization;
 namespace timetrees
 {
     class Program
-    {
+    {  
+        const int personIdIndex    = 0;
+        const int personNameIndex  = 1;
+        const int personBirthIndex = 2;
+        const int personDeathIndex = 3;
+
+        const int timelineDateIndex        = 0;
+        const int timelineDescriptionIndex = 1;
+
         static void Main(string[] args)
         {
             string timeLineFile = "..\\..\\..\\..\\timeline.csv";
-            string peopleFile = "..\\..\\..\\..\\people.csv";
+            string peopleFile   = "..\\..\\..\\..\\people.csv";
 
             /*string[] lines = File.ReadAllLines(timeLineFile);
             foreach (var line in lines)
@@ -26,7 +34,7 @@ namespace timetrees
             Console.WriteLine(""); */
 
             string[][] timeLineData = ReadData(timeLineFile);
-            string[][] peopleData = ReadData(peopleFile);
+            object[][] peopleData   = ReadDataAsObject(peopleFile);
             //Console.WriteLine(FindMinAndMaxDate(timeLineData));
             //Console.WriteLine("");
             (int years, int months, int days) = DeltaDate(timeLineData);
@@ -52,18 +60,18 @@ namespace timetrees
         static object[][] ReadDataAsObject(string path)
         {
             string[] data = File.ReadAllLines(path);
-            object[][] splitData = new string[data.Length][];
+            object[][] splitData = new object[data.Length][];
             for (int i = 0; i < data.Length; i++)
             {
                 var line = data[i]; 
                 string[] parts = line.Split(";"); 
-                object[] elements = new object[parts.Length];
-                elements[0] = int.Parse(parts[0]);
-                elements[1] = parts[1];
-                elements[2] = DateTime.Parse(parts[2]);
-                if (parts.Length ==4)
+                object[] elements = new object[4];
+                elements[personIdIndex] = int.Parse(parts[personIdIndex]);
+                elements[personNameIndex] = parts[personNameIndex];
+                elements[personBirthIndex] = DateTime.Parse(parts[personBirthIndex]);
+                if (parts.Length == 4)
                 {
-                    elements[3] = DateTime.Parse(parts[2]);
+                    elements[personDeathIndex] = DateTime.Parse(parts[personDeathIndex]);
                 }
                 splitData[i] = elements;
             }
@@ -98,16 +106,16 @@ namespace timetrees
             return (diffdate.Year,diffdate.Month,diffdate.Day);
         }
 
-        static void GetLeapYear(string[][] peopleData)
+        static void GetLeapYear(object[][] peopleData)
         {
             DateTime nowDate = DateTime.Now;
-            foreach (var line in peopleData)
+            foreach (var elements in peopleData)
             {
                 int age;
-                DateTime birth = DateTime.Parse(line[2]);
+                DateTime birth = (DateTime)elements[personBirthIndex];
                 DateTime deathDate = DateTime.MinValue;
-                if (line[2] == "") deathDate = DateTime.MinValue; else DateTime.ParseExact(line[2], "yyyy-mm-dd", CultureInfo.InvariantCulture);
-                if (deathDate == DateTime.MinValue)
+                if (elements[personDeathIndex] == null) deathDate = DateTime.MinValue; else deathDate = (DateTime)elements[personDeathIndex];
+                if (deathDate == null)
                 {
                     age = nowDate.Year - birth.Year;
                     if (DateTime.Now.DayOfYear < birth.DayOfYear) age++;   //на случай, если день рождения уже прошёл
@@ -117,7 +125,7 @@ namespace timetrees
                     age = deathDate.Year - birth.Year;
                     if (deathDate.DayOfYear < birth.DayOfYear) age++;   //на случай, если день рождения уже прошёл
                 }              
-                if ((DateTime.IsLeapYear(birth.Year)) & (age < 20)) Console.WriteLine(line[1]);
+                if ((DateTime.IsLeapYear(birth.Year)) & (age < 20)) Console.WriteLine(elements[1]);
             }
         }
     }
