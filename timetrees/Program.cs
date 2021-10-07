@@ -33,8 +33,8 @@ namespace timetrees
             }
             Console.WriteLine(""); */
 
-            string[][] timeLineData = ReadData(timeLineFile);
-            object[][] peopleData   = ReadDataAsObject(peopleFile);
+            TimelineEvent[] timeLineData = ReadTimelineData(timeLineFile);
+            Person[]        peopleData   = ReadPersonData(peopleFile);
             //Console.WriteLine(FindMinAndMaxDate(timeLineData));
             //Console.WriteLine("");
             (int years, int months, int days) = DeltaDate(timeLineData);
@@ -57,41 +57,69 @@ namespace timetrees
             return splitData;
         }
 
-        static object[][] ReadDataAsObject(string path)
+        static Person[] ReadPersonData(string path)
         {
-            string[] data = File.ReadAllLines(path);
-            object[][] splitData = new object[data.Length][];
+            string[][] data = ReadData(path);
+            Person[] people = new Person[data.Length];
             for (int i = 0; i < data.Length; i++)
             {
-                var line = data[i]; 
-                string[] parts = line.Split(";"); 
-                object[] elements = new object[4];
-                elements[personIdIndex] = int.Parse(parts[personIdIndex]);
-                elements[personNameIndex] = parts[personNameIndex];
-                elements[personBirthIndex] = DateTime.Parse(parts[personBirthIndex]);
+                var parts = data[i];
+                Person person = new Person();
+                person.id = int.Parse(parts[personIdIndex]);
+                person.name = parts[personNameIndex];
+                person.birth = DateTime.Parse(parts[personBirthIndex]);
                 if (parts.Length == 4)
                 {
-                    elements[personDeathIndex] = DateTime.Parse(parts[personDeathIndex]);
+                    person.death = DateTime.Parse(parts[personDeathIndex]);
                 }
-                splitData[i] = elements;
+                people[i] = person;
             }
-            return splitData;
+            return people;
         }
 
-        static (DateTime, DateTime) FindMinAndMaxDate(string[][] timeline)
+        static TimelineEvent[] ReadTimelineData(string path)
+        {
+            string[][] data = ReadData(path);
+            TimelineEvent[] timelineEvent = new TimelineEvent[data.Length];
+            for (int i = 0; i<data.Length; i++)
+            {
+                var parts = data[i];
+                TimelineEvent timeEvent = new TimelineEvent();
+                timeEvent.time = DateTime.Parse(parts[timelineDateIndex]);
+                timeEvent.description = parts[timelineDescriptionIndex];
+                timelineEvent[i] = timeEvent;
+            }
+            return timelineEvent;
+        }
+
+        struct Person
+        {
+            public int      id;
+            public string   name;
+            public DateTime birth;
+            public DateTime death;
+        }
+
+        struct TimelineEvent
+        {
+            public DateTime time;
+            public string   description;
+        }
+
+        static (DateTime, DateTime) FindMinAndMaxDate(TimelineEvent[] timeline)
         {
             DateTime minDate = DateTime.MaxValue;
             DateTime maxDate = DateTime.MinValue;
-            foreach (var line in timeline)
+            foreach (var timeDate in timeline)
             {
-                DateTime date = DateTime.Parse(line[0]);
+                DateTime date = timeDate.time;
                 if (date < minDate) minDate = date;
                 if (date > maxDate) maxDate = date;
             }
             return (maxDate, minDate);
         }
 
-        static (int, int, int) DeltaDate(string[][] timeline)
+        static (int, int, int) DeltaDate(TimelineEvent[] timeline)
         {
             (DateTime maxDate, DateTime minDate) = FindMinAndMaxDate(timeline);
             TimeSpan delta = maxDate - minDate; 
@@ -106,15 +134,15 @@ namespace timetrees
             return (diffdate.Year,diffdate.Month,diffdate.Day);
         }
 
-        static void GetLeapYear(object[][] peopleData)
+        static void GetLeapYear(Person[] peopleData)
         {
             DateTime nowDate = DateTime.Now;
-            foreach (var elements in peopleData)
+            foreach (var person in peopleData)
             {
                 int age;
-                DateTime birth = (DateTime)elements[personBirthIndex];
+                DateTime birth = person.birth;
                 DateTime deathDate = DateTime.MinValue;
-                if (elements[personDeathIndex] == null) deathDate = DateTime.MinValue; else deathDate = (DateTime)elements[personDeathIndex];
+                if (person.death == null) deathDate = DateTime.MinValue; else deathDate = person.death;
                 if (deathDate == null)
                 {
                     age = nowDate.Year - birth.Year;
@@ -125,7 +153,7 @@ namespace timetrees
                     age = deathDate.Year - birth.Year;
                     if (deathDate.DayOfYear < birth.DayOfYear) age++;   //на случай, если день рождения уже прошёл
                 }              
-                if ((DateTime.IsLeapYear(birth.Year)) & (age < 20)) Console.WriteLine(elements[1]);
+                if ((DateTime.IsLeapYear(birth.Year)) & (age < 20)) Console.WriteLine(person.name);
             }
         }
     }
