@@ -1,6 +1,9 @@
 using System;
 using System.IO;
 using System.Globalization;
+using Newtonsoft;
+using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace timetrees
 {
@@ -14,25 +17,26 @@ namespace timetrees
         const int timelineDateIndex        = 0;
         const int timelineDescriptionIndex = 1;
 
+        struct Person
+        {
+            public int      id;
+            public string   name;
+            public DateTime birth;
+            public DateTime death;
+        }
+
+        struct TimelineEvent
+        {
+            public DateTime time;
+            public string   description;
+        }
+
         static void Main(string[] args)
         {
             string timeLineFile = "..\\..\\..\\..\\timeline.csv";
             string peopleFile   = "..\\..\\..\\..\\people.csv";
-
-            /*string[] lines = File.ReadAllLines(timeLineFile);
-            foreach (var line in lines)
-            {
-                Console.WriteLine(line);
-            }
-            Console.WriteLine("");
-
-            string[] liness = File.ReadAllLines(peopleFile);
-            foreach (var line in liness)
-            {
-                Console.WriteLine(line);
-            }
-            Console.WriteLine(""); */
-
+            string timeLineFileJson = "..\\..\\..\\..\\timeline.json";
+            string peopleFileJson = "..\\..\\..\\..\\people.json";
             TimelineEvent[] timeLineData = ReadTimelineData(timeLineFile);
             Person[]        peopleData   = ReadPersonData(peopleFile);
             //Console.WriteLine(FindMinAndMaxDate(timeLineData));
@@ -92,20 +96,6 @@ namespace timetrees
             return timelineEvent;
         }
 
-        struct Person
-        {
-            public int      id;
-            public string   name;
-            public DateTime birth;
-            public DateTime death;
-        }
-
-        struct TimelineEvent
-        {
-            public DateTime time;
-            public string   description;
-        }
-
         static (DateTime, DateTime) FindMinAndMaxDate(TimelineEvent[] timeline)
         {
             DateTime minDate = DateTime.MaxValue;
@@ -125,12 +115,9 @@ namespace timetrees
             TimeSpan delta = maxDate - minDate; 
             //Console.WriteLine(delta);
             DateTime diffdate = new DateTime() + delta;
-            //Console.WriteLine(diffdate);
             diffdate = diffdate.AddYears(-1);
             diffdate = diffdate.AddMonths(-1);
             diffdate = diffdate.AddDays(-3);
-            //Console.WriteLine(diffdate);
-            //Console.WriteLine("");
             return (diffdate.Year,diffdate.Month,diffdate.Day);
         }
 
@@ -155,6 +142,17 @@ namespace timetrees
                 }              
                 if ((DateTime.IsLeapYear(birth.Year)) & (age < 20)) Console.WriteLine(person.name);
             }
+        }
+        static Person[] ReadPeopleFromJson(string path)
+        {
+            string json = File.ReadAllText(path);
+            return JsonConvert.DeserializeObject<Person[]>(json);
+        }
+
+        static void WritePeopleFromJson(string path, Person[] people)
+        {
+            string json = JsonConvert.SerializeObject(people);
+            File.WriteAllText(path,json);
         }
     }
 }
