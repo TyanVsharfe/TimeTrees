@@ -4,11 +4,14 @@ using System.Globalization;
 using System.Collections.Generic;
 using Microsoft.VisualBasic;
 using System.Linq;
+using Newtonsoft.Json;
 
 namespace timetrees
 {
     class Program
-    {  
+    {
+        private static List<Person> people;
+
         const int personIdIndex    = 0;
         const int personNameIndex  = 1;
         const int personBirthIndex = 2;
@@ -16,12 +19,14 @@ namespace timetrees
 
         const int timelineDateIndex        = 0;
         const int timelineDescriptionIndex = 1;
-
-        private const string DeltaId     = "delta";
-        private const string AddPersonId = "addP";
-        private const string AddEventId  = "addE";
-        private const string LeapYearId  = "leap";
-        private const string ExitId      = "exit";
+        
+        private const string DeltaId       = "delta";
+        private const string AddPersonId   = "addP";
+        private const string AddEventId    = "addE";
+        private const string LeapYearId    = "leap";
+        private const string WritePeopleId = "writeP";
+        private const string WriteEventId  = "writeE";
+        private const string ExitId        = "exit";
 
         class MenuItem
         {
@@ -51,11 +56,13 @@ namespace timetrees
             Console.CursorVisible = false;
             List<MenuItem> menu = new List<MenuItem>
             {
-                new MenuItem {Id = DeltaId, Text = "Найти дельту дат между событиями", IsSelected = true},
-                new MenuItem {Id = AddPersonId, Text = "Добавить человека"},
-                new MenuItem {Id = AddEventId, Text = "Добавить событие" },
-                new MenuItem {Id = LeapYearId, Text = "Найти людей, родившихся в високосный год"},
-                new MenuItem {Id = ExitId, Text = "Выход"}
+                new MenuItem {Id = DeltaId,         Text = "Найти дельту дат между событиями", IsSelected = true},
+                new MenuItem {Id = AddPersonId,     Text = "Добавить человека"},
+                new MenuItem {Id = AddEventId,      Text = "Добавить событие" },
+                new MenuItem {Id = LeapYearId,      Text = "Найти людей, родившихся в високосный год"},
+                new MenuItem {Id = WritePeopleId,   Text = "Вывести всех людей в списке"},
+                new MenuItem {Id = WriteEventId,    Text = "Вывести все события в списке"},
+                new MenuItem {Id = ExitId,          Text = "Выход"}
             };
             bool exit = false;
             do
@@ -68,20 +75,37 @@ namespace timetrees
                 {
                    var selectedItem = menu.First(x => x.IsSelected);
                    Execute(selectedItem.Id);
-                   Console.WriteLine("Хотите продолжить? y/n");
-                   string answer = Console.ReadLine();
-                   if (answer == "n" || answer == "no")
-                    {
-                        break;
-                    }
+                   Console.WriteLine("Хотите продолжить? Y/N");
+                    string answer;
+                    do
+                    {                      
+                        answer = Console.ReadLine();
+                        if (GetNegativeAnswer(answer)) DoExit();
+                        if (GetPositiveAnswer(answer) == false) Console.WriteLine("Ваш ответ некорректен, введите Y/N");
+                    } while (GetPositiveAnswer(answer) == false & GetNegativeAnswer(answer) == false);
                 }
             }
             while (!exit);
         }
 
+        static bool GetNegativeAnswer(string answer)
+        {   
+            string[] negativeAnswers = new[] { "n", "no", "N", "NO", "нет", "Нет", "НЕТ"};
+            if (negativeAnswers.Contains(answer)) return true;
+            else return false;
+        }
+
+        static bool GetPositiveAnswer(string answer)
+        {
+            string[] positiveAnswers = new[] { "y", "yes", "Y", "YES", "да", "Да", "ДА"};
+            if (positiveAnswers.Contains(answer)) return true;
+            else return false;
+        }
+
+
         static void DrawMenu(List<MenuItem> menu)
         {
-            Console.Clear();
+            RemoveScreenBlink();
             foreach(MenuItem menuItems in menu)
             {
                 if (menuItems.IsSelected) 
@@ -92,6 +116,16 @@ namespace timetrees
                 Console.WriteLine(menuItems.Text);
             }
             Console.BackgroundColor = ConsoleColor.Black;
+        }
+        
+        static void RemoveScreenBlink()
+        {
+            for (int i = 0; i < Console.WindowHeight; i++)
+            {
+                Console.SetCursorPosition(0, i);
+                Console.Write(new string(' ',Console.WindowWidth));
+            }
+            Console.SetCursorPosition(0, 0);
         }
 
         static void MenuSelectNext(List<MenuItem> menu)
@@ -125,6 +159,8 @@ namespace timetrees
             if (doProgram == AddPersonId) WritePerson();
             if (doProgram == AddEventId) WriteEvent();
             if (doProgram == LeapYearId) DoGetLeapYear();
+            if (doProgram == WritePeopleId) DoWritePeople();
+            if (doProgram == WriteEventId) DoWriteEvent();
             if (doProgram == ExitId) DoExit();
         }
 
@@ -159,6 +195,12 @@ namespace timetrees
                 people[i] = person;
             }
             return people;
+        }
+
+        static List<Person> ReadDataFromJson(string path)
+        {
+            string json = File.ReadAllText(path);
+            return JsonConvert.DeserializeObject<List<Person>>(json);
         }
 
         static TimelineEvent[] ReadTimelineData(string path)
@@ -238,6 +280,24 @@ namespace timetrees
                     if (deathDate.DayOfYear < birth.DayOfYear) age++;   //на случай, если день рождения уже прошёл
                 }              
                 if ((DateTime.IsLeapYear(birth.Year)) & (age < 20)) Console.WriteLine(person.name);
+            }
+        }
+
+        static void DoWritePeople()
+        {
+            string[] data = File.ReadAllLines("..\\..\\..\\..\\people.csv");
+            for (int i = 0; i < data.Length; i++)
+            {
+                Console.WriteLine(data[i]);            
+            }
+        }
+
+        static void DoWriteEvent()
+        {
+            string[] data = File.ReadAllLines("..\\..\\..\\..\\timeline.csv");
+            for (int i = 0; i < data.Length; i++)
+            {
+                Console.WriteLine(data[i]);
             }
         }
 
