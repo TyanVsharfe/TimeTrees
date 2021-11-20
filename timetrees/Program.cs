@@ -10,9 +10,6 @@ namespace timetrees
 {
     class Program
     {
-        private static List<Person> people;
-        private static int countPeople;
-
         const int personIdIndex    = 0;
         const int personNameIndex  = 1;
         const int personBirthIndex = 2;
@@ -26,7 +23,7 @@ namespace timetrees
         private const string DeltaId       = "delta";
         private const string AddPersonId   = "addP";
         private const string AddEventId    = "addE";
-        private const string FoundPeopleId = "Found";
+        private const string EditPeopleId  = "edit";
         private const string LeapYearId    = "leap";
         private const string WritePeopleId = "writeP";
         private const string WriteEventId  = "writeE";
@@ -39,17 +36,17 @@ namespace timetrees
             public bool IsSelected;
         }
 
-        struct Person
+        class Person
         {
             public int      id;
             public string   name;
             public DateTime birth;
-            public DateTime death;
-            public int      parentFirst;
-            public int      parentSecond;
+            public DateTime? death;
+            public int?      parentFirst;
+            public int?      parentSecond;
         }
 
-        struct TimelineEvent
+        class TimelineEvent
         {
             public DateTime time;
             public string   description;
@@ -57,15 +54,13 @@ namespace timetrees
 
         static void Main(string[] args)
         {
-            people = ReadListPersons();
-            countPeople = people.Count;
             Console.CursorVisible = false;
             List<MenuItem> menu = new List<MenuItem>
             {
                 new MenuItem {Id = DeltaId,         Text = "Найти дельту дат между событиями", IsSelected = true},
                 new MenuItem {Id = AddPersonId,     Text = "Добавить человека"},
                 new MenuItem {Id = AddEventId,      Text = "Добавить событие" },
-                new MenuItem {Id = FoundPeopleId,   Text = "Поиск людей"},
+                new MenuItem {Id = EditPeopleId,    Text = "Отредактировать данные человека"},
                 new MenuItem {Id = LeapYearId,      Text = "Найти людей, родившихся в високосный год"},
                 new MenuItem {Id = WritePeopleId,   Text = "Вывести всех людей в списке"},
                 new MenuItem {Id = WriteEventId,    Text = "Вывести все события в списке"},
@@ -88,8 +83,8 @@ namespace timetrees
                     {                      
                         answer = Console.ReadLine();
                         if (GetNegativeAnswer(answer)) DoExit();
-                        if (GetPositiveAnswer(answer) == false) Console.WriteLine("Ваш ответ некорректен, введите Y/N");
-                    } while (GetPositiveAnswer(answer) == false & GetNegativeAnswer(answer) == false);
+                        if (!GetPositiveAnswer(answer)) Console.WriteLine("Ваш ответ некорректен, введите Y/N");
+                    } while (!GetPositiveAnswer(answer) & !GetNegativeAnswer(answer));
                 }
             }
             while (!exit);
@@ -164,7 +159,7 @@ namespace timetrees
             if (doProgram == DeltaId) DoDeltaDate();
             if (doProgram == AddPersonId) WritePerson();
             if (doProgram == AddEventId) WriteEvent();
-            if (doProgram == FoundPeopleId) FindPersonMenu();
+            if (doProgram == EditPeopleId) EditPerson();
             if (doProgram == LeapYearId) DoGetLeapYear();
             if (doProgram == WritePeopleId) DoWritePeople();
             if (doProgram == WriteEventId) DoWriteEvent();
@@ -208,10 +203,21 @@ namespace timetrees
                 person.id = int.Parse(parts[personIdIndex]);
                 person.name = parts[personNameIndex];
                 person.birth = DateTime.Parse(parts[personBirthIndex]);
-                if (parts.Length == 4)
+                if ((parts.Length >= 4) && (parts[personDeathIndex] != ""))
                 {
-                    person.death = DateTime.Parse(parts[personDeathIndex]);
+                    person.death = DateTime.Parse(parts[personDeathIndex]);                
                 }
+                else person.death = null;
+                if ((parts.Length >= 5) && (parts[personOneParent] != ""))
+                {
+                    person.parentFirst = int.Parse(parts[personOneParent]);                
+                }
+                else person.parentFirst = null;
+                if ((parts.Length == 6) && (parts[personTwoParent] != ""))
+                {
+                    person.parentSecond = int.Parse(parts[personTwoParent]);
+                }
+                else person.parentSecond = null;
                 people[i] = person;
             }
             return people;
@@ -293,7 +299,7 @@ namespace timetrees
             {
                 int age;
                 DateTime birth = person.birth;
-                DateTime deathDate = DateTime.MinValue;
+                DateTime? deathDate = DateTime.MinValue;
                 if (person.death == null) deathDate = DateTime.MinValue; else deathDate = person.death;
                 if (deathDate == null)
                 {
@@ -302,8 +308,8 @@ namespace timetrees
                 }
                 else
                 {
-                    age = deathDate.Year - birth.Year;
-                    if (deathDate.DayOfYear < birth.DayOfYear) age++;   //на случай, если день рождения уже прошёл
+                    age = Convert.ToDateTime(deathDate).Year - birth.Year;
+                    if (Convert.ToDateTime(deathDate).DayOfYear < birth.DayOfYear) age++;   //на случай, если день рождения уже прошёл
                 }              
                 if ((DateTime.IsLeapYear(birth.Year)) & (age < 20)) Console.WriteLine(person.name);
             }
@@ -338,6 +344,7 @@ namespace timetrees
 
         static Person FindPersonMenu()
         {
+            List<Person> people = ReadListPersons();
             List<Person> found = new List<Person>();
             string name = string.Empty;
             int selectedIndex = 0;
@@ -415,20 +422,108 @@ namespace timetrees
                 {
                     Console.BackgroundColor = ConsoleColor.Magenta;
                 }
-                if (person.death != DateTime.MinValue) Console.WriteLine($"{person.id}\t"+$"{person.name}\t"+$"{person.birth}\t"+$"{person.death}");
+                if (person.death != null) Console.WriteLine($"{person.id}\t"+$"{person.name}\t"+$"{person.birth}\t"+$"{person.death}");
                 else Console.WriteLine($"{person.id}\t" + $"{person.name}\t" + $"{person.birth}\t" + $"жив");
 
                 Console.BackgroundColor = ConsoleColor.Black;
             }
         }
 
-        static void EditPerson()
+        static void EditPerson() //сократить, не проверил все остальное
         {
+            List<Person> people = ReadListPersons();
             Person editPerson = FindPersonMenu();
+            Console.Clear();
+            Console.WriteLine($"{editPerson.name}\t{editPerson.birth}\t{editPerson.death}");
+            Console.WriteLine($"Первый родитель: {people[personOneParent].name}\t {people[personOneParent].birth}\t {people[personOneParent].death}");
+            Console.WriteLine($"Второй родитель: {people[personTwoParent].name}\t {people[personTwoParent].birth}\t {people[personTwoParent].death}");
+            Console.WriteLine("Хотите изменить имя?");
+            if (GetAnswer())
+            {
+                editPerson.name = Console.ReadLine();
+            }
+            Console.WriteLine("Хотите изменить дату рождения?");
+            if (GetAnswer())
+            {
+                editPerson.birth = GetTrueDateTime();           
+            }
+            Console.WriteLine("Хотите изменить дату смерти?");
+            if (GetAnswer())
+            {
+                Console.WriteLine("Введите дату смерти, если человек жив введите 0");
+                editPerson.death = ParseDate(Console.ReadLine());
+                if (editPerson.death == DateTime.MinValue) editPerson.death = null;
+            }
+            Console.WriteLine("Хотите изменить данные о родителях?"); //сделать менюшку
+            if (GetAnswer())
+            {
+                Console.WriteLine("Введите какого родителя вы хотите изменить (1,2), если хотите изменить всех родителей введите 3, если удалить второго и ввести первго введите 4, если хотите удалить родителей введите 0");
+                string parents = Console.ReadLine();
+                if ((int.Parse(parents) > 2) | (int.Parse(parents) <= 0)) Console.WriteLine("Вы указали неверные данные, попробуйте заново");
+
+                if (int.Parse(parents) == 0)
+                {
+                    editPerson.parentFirst = null;
+                    editPerson.parentSecond = null;
+                }
+                if (int.Parse(parents) == 1)
+                {
+                    Person parent = FindPersonMenu();
+                    editPerson.parentFirst = parent.id;
+                }
+                if (int.Parse(parents) == 2)
+                {
+                    Person parent = FindPersonMenu();
+                    editPerson.parentSecond = parent.id;
+                }
+                if (int.Parse(parents) == 3)
+                {
+                    Person parent = FindPersonMenu();
+                    editPerson.parentFirst = parent.id;
+                    parent = FindPersonMenu();
+                    editPerson.parentSecond = parent.id;
+                }
+                if (int.Parse(parents) == 4)
+                {
+                    Person parent = FindPersonMenu();
+                    editPerson.parentFirst = parent.id;
+                    editPerson.parentSecond = null;
+                }
+            }
+            people.RemoveAt(editPerson.id - 1);
+            people.Insert(editPerson.id - 1, editPerson);
+            System.IO.StreamWriter People = new System.IO.StreamWriter("..\\..\\..\\..\\people.csv", false);
+            foreach (Person person in people)
+            {
+                People.WriteLine($"{person.id};{person.name};{person.birth};{person.death};{person.parentFirst};{person.parentSecond}");
+            }
+            People.Close();
+        }
+
+        static bool GetAnswer()
+        {
+            string answer;
+            do
+            {
+                answer = Console.ReadLine();
+                if (GetNegativeAnswer(answer))
+                {
+                    return false;
+                }
+                if (GetPositiveAnswer(answer))
+                {                  
+                    return true;
+                }
+                if (!GetPositiveAnswer(answer)) Console.WriteLine("Ваш ответ некорректен, введите Y/N");
+            } while (!GetPositiveAnswer(answer) & !GetNegativeAnswer(answer));
+            return false;
         }
 
         static void WritePerson()
         {
+            List<Person> people = ReadListPersons();
+            int countPeople = people.Count;
+
             Person person = new Person();
             Console.Clear();
             Console.WriteLine("Введите имя");
@@ -492,10 +587,9 @@ namespace timetrees
             }
 
             System.IO.StreamWriter People = new System.IO.StreamWriter("..\\..\\..\\..\\people.csv", true);
-            //Мега дибильное ветвление, надо подумать как сделать более красиво и покроче \/
-            if (death != "") People.WriteLine($"{person.id};{person.name};{person.birth.Year}-{person.birth.Month}-{person.birth.Day};{person.death.Year}-{person.death.Month}-{person.death.Day};{person.parentFirst};{person.parentSecond}"); 
-            else People.WriteLine($"{person.id};{person.name};{person.birth.Year}-{person.birth.Month}-{person.birth.Day};;{person.parentFirst};{person.parentSecond}");
+            People.WriteLine($"{person.id};{person.name};{person.birth};{person.death};{person.parentFirst};{person.parentSecond}"); //Хароооош, неплохо сделано ^_^ (Подумай о типе nullable)
             People.Close();
+            Console.Clear();
         }
 
         static void WriteEvent()
@@ -504,18 +598,7 @@ namespace timetrees
 
             Console.Clear();
             Console.WriteLine("Введите дату события");
-            DateTime timeTrue = DateTime.MinValue;
-            do
-            {
-                string date = Console.ReadLine();
-                if (ParseDate(date) == DateTime.MinValue) Console.WriteLine("Дата введена некорректно, попробуйте снова");
-                else
-                {
-                    timeEvent.time = ParseDate(date);
-                    timeTrue = ParseDate(date);
-                }
-            } 
-            while(timeTrue == DateTime.MinValue);
+            timeEvent.time = GetTrueDateTime();
 
             Console.Clear();
             Console.WriteLine("Введите описание события");
@@ -530,11 +613,29 @@ namespace timetrees
             for (int i = 1; i <= countEP; i++)
             {
                 Person parent = FindPersonMenu();             
-                if (i <= countEP) Event.Write(";");
+                if (i < countEP) Event.Write(";");
                 Event.Write($"{parent.id}");               
             }
+            Event.WriteLine();
             Event.Close();   
       
+        }
+
+        static DateTime GetTrueDateTime()
+        {
+            DateTime timeTrue = DateTime.MinValue;
+            do
+            {
+                string date = Console.ReadLine();
+                if (date == "0") return DateTime.MinValue;
+                if (ParseDate(date) == DateTime.MinValue) Console.WriteLine("Дата введена некорректно, попробуйте снова");
+                else
+                {
+                    timeTrue = ParseDate(date);
+                }
+            }
+            while (timeTrue == DateTime.MinValue);
+            return timeTrue;
         }
 
         public static DateTime ParseDate(string value)
