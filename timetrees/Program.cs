@@ -29,6 +29,19 @@ namespace timetrees
         private const string WriteEventId  = "writeE";
         private const string ExitId        = "exit";
 
+        private const string EditName    = "editName";
+        private const string EditBirth   = "editBirth";
+        private const string EditDeath   = "editDeath";
+        private const string EditParents = "editParents";
+        private const string SavePerson  = "savePerson";
+
+        private const string EditFirstP     = "EditFirstP";
+        private const string EditSecondP    = "EditSecondP";
+        private const string EditBothP      = "EditBothP";
+        private const string DeleteFirstP   = "DeleteFirstP";
+        private const string DeleteSecondP  = "DeleteSecondP";
+        private const string DeleteBothP    = "DeleteBothP";
+
         class MenuItem
         {
             public string Id;
@@ -75,12 +88,12 @@ namespace timetrees
                 if (keyInfo.Key == ConsoleKey.UpArrow) MenuSelectPrevious(menu);
                 if (keyInfo.Key == ConsoleKey.Enter)
                 {
-                   var selectedItem = menu.First(x => x.IsSelected);
-                   Execute(selectedItem.Id);
-                   Console.WriteLine("Хотите продолжить? Y/N");
+                    var selectedItem = menu.First(x => x.IsSelected);
+                    Execute(selectedItem.Id);
+                    Console.WriteLine("Хотите продолжить? Y/N");
                     string answer;
                     do
-                    {                      
+                    {
                         answer = Console.ReadLine();
                         if (GetNegativeAnswer(answer)) DoExit();
                         if (!GetPositiveAnswer(answer)) Console.WriteLine("Ваш ответ некорректен, введите Y/N");
@@ -141,6 +154,19 @@ namespace timetrees
             menu[selectedIndex].IsSelected = true;
         }
 
+        static int MenuSelectNextPerson(int selectedIndex, int listCount)
+        {
+            if (selectedIndex == 0) return selectedIndex + 1;
+            else if (selectedIndex + 1 < listCount) return selectedIndex + 1;
+            else return 0;
+        }
+
+        static int MenuSelectPrevPerson(int selectedIndex, int listCount)
+        {
+            if (selectedIndex - 1 < 0) return listCount - 1;
+            else return selectedIndex - 1;
+        }
+
         static void MenuSelectPrevious(List<MenuItem> menu)
         {
             var selectedItem = menu.First(x => x.IsSelected);
@@ -163,6 +189,12 @@ namespace timetrees
             if (doProgram == LeapYearId) DoGetLeapYear();
             if (doProgram == WritePeopleId) DoWritePeople();
             if (doProgram == WriteEventId) DoWriteEvent();
+
+            if (doProgram == EditName) ;
+            if (doProgram == EditBirth) ;
+            if (doProgram == EditDeath) ;
+            if (doProgram == EditParents) ;
+
             if (doProgram == ExitId) DoExit();
         }
 
@@ -374,29 +406,21 @@ namespace timetrees
                 }
                 else if(keyInfo.Key == ConsoleKey.DownArrow)
                 {
-                    if (selectedIndex == 0) selectedIndex++;
-                    else if (selectedIndex + 1 < found.Count) selectedIndex++;
-                    else selectedIndex = 0;
+                    selectedIndex = MenuSelectNextPerson(selectedIndex, found.Count);
                 }
                 else if(keyInfo.Key == ConsoleKey.UpArrow)
                 {
-                    if (selectedIndex == 0) selectedIndex = found.Count - 1;
-                    else if (selectedIndex - 1 < 0) selectedIndex = found.Count - 1;
-                    else selectedIndex--;
+                    selectedIndex = MenuSelectPrevPerson(selectedIndex,found.Count);             
                 }
-                else if(keyInfo.Key == ConsoleKey.Enter)
+                else if ((keyInfo.Key == ConsoleKey.Enter) & (selectedIndex != 0))
                 {
-                    if (selectedIndex != 0)
-                    {
-                        selectedPerson = found[selectedIndex];
-                        break;
-                    }
+                    selectedPerson = found[selectedIndex];
+                    break;
                 }
                 else if(keyInfo.Key == ConsoleKey.Escape)
                 {
                     break;
                 }
-
             } while (true);
             return selectedPerson;
         }
@@ -437,58 +461,135 @@ namespace timetrees
             Console.WriteLine($"{editPerson.name}\t{editPerson.birth}\t{editPerson.death}");
             Console.WriteLine($"Первый родитель: {people[personOneParent].name}\t {people[personOneParent].birth}\t {people[personOneParent].death}");
             Console.WriteLine($"Второй родитель: {people[personTwoParent].name}\t {people[personTwoParent].birth}\t {people[personTwoParent].death}");
-            Console.WriteLine("Хотите изменить имя?");
-            if (GetAnswer())
+
+            List<MenuItem> editMenu = new List<MenuItem>
             {
-                editPerson.name = Console.ReadLine();
+                new MenuItem {Id = EditName,    Text = "Изменить имя", IsSelected = true},
+                new MenuItem {Id = EditBirth,   Text = "Изменить дату рождения"},
+                new MenuItem {Id = EditDeath,   Text = "Изменить Дату смерти"},
+                new MenuItem {Id = EditParents, Text = "Изменить данные о родителях"},
+                new MenuItem {Id = SavePerson,  Text = "Сохранить данные"},
+            };
+            bool exit = false;
+            do
+            {
+                DrawMenu(editMenu);
+                ConsoleKeyInfo keyInfo = Console.ReadKey(true);
+                if (keyInfo.Key == ConsoleKey.DownArrow) MenuSelectNext(editMenu);
+                if (keyInfo.Key == ConsoleKey.UpArrow) MenuSelectPrevious(editMenu);
+                if (keyInfo.Key == ConsoleKey.Enter)
+                {
+                    var selectedItem = editMenu.First(x => x.IsSelected);
+                    ExecuteEdit(selectedItem.Id, editPerson, people);
+                    Console.WriteLine("Хотите продолжить? Y/N");
+                    string answer;
+                    do
+                    {
+                        answer = Console.ReadLine();
+                        if (GetNegativeAnswer(answer)) DoExit();
+                        if (!GetPositiveAnswer(answer)) Console.WriteLine("Ваш ответ некорректен, введите Y/N");
+                    } while (!GetPositiveAnswer(answer) & !GetNegativeAnswer(answer));
+                }
             }
-            Console.WriteLine("Хотите изменить дату рождения?");
-            if (GetAnswer())
+            while (!exit);
+
+           
+        }
+
+        static void ExecuteEdit(string doProgram, Person editPerson, List<Person> people)
+        {
+            if (doProgram == EditName)
             {
-                editPerson.birth = GetTrueDateTime();           
+                Console.WriteLine("Введите новое имя");
+                editPerson.name = Console.ReadLine();       
             }
-            Console.WriteLine("Хотите изменить дату смерти?");
-            if (GetAnswer())
+            if (doProgram == EditBirth)
             {
-                Console.WriteLine("Введите дату смерти, если человек жив введите 0");
+                Console.WriteLine("Введите новую дату рождения");
+                editPerson.birth = GetTrueDateTime();
+            }
+            if (doProgram == EditDeath)
+            {
+                Console.WriteLine("Введите новую дату смерти");
                 editPerson.death = ParseDate(Console.ReadLine());
                 if (editPerson.death == DateTime.MinValue) editPerson.death = null;
             }
-            Console.WriteLine("Хотите изменить данные о родителях?"); //сделать менюшку
-            if (GetAnswer())
+            if (doProgram == EditParents)
             {
-                Console.WriteLine("Введите какого родителя вы хотите изменить (1,2), если хотите изменить всех родителей введите 3, если удалить второго и ввести первго введите 4, если хотите удалить родителей введите 0");
-                string parents = Console.ReadLine();
-                if ((int.Parse(parents) > 2) | (int.Parse(parents) <= 0)) Console.WriteLine("Вы указали неверные данные, попробуйте заново");
+                List<MenuItem> editParents = new List<MenuItem>
+                {
+                    new MenuItem {Id = EditFirstP,      Text = "Изменить первого родителя", IsSelected = true},
+                    new MenuItem {Id = EditSecondP,     Text = "Изменить второго родителя"},
+                    new MenuItem {Id = EditBothP,       Text = "Изменить оба родителя"},
+                    new MenuItem {Id = DeleteFirstP,    Text = "Удалить первого родителя"},
+                    new MenuItem {Id = DeleteSecondP,   Text = "Удалить второго родителя"},
+                    new MenuItem {Id = DeleteBothP,     Text = "Удалить всех родителей"},
+                };
+                bool exit = false;
+                do
+                {
+                    DrawMenu(editParents);
+                    ConsoleKeyInfo keyInfo = Console.ReadKey(true);
+                    if (keyInfo.Key == ConsoleKey.DownArrow) MenuSelectNext(editParents);
+                    if (keyInfo.Key == ConsoleKey.UpArrow) MenuSelectPrevious(editParents);
+                    if (keyInfo.Key == ConsoleKey.Enter)
+                    {
+                        var selectedItem = editParents.First(x => x.IsSelected);
+                        ExecuteEditParents(selectedItem.Id, editPerson, people);
+                        Console.WriteLine("Хотите продолжить? Y/N");
+                        string answer;
+                        do
+                        {
+                            answer = Console.ReadLine();
+                            if (GetNegativeAnswer(answer)) DoExit();
+                            if (!GetPositiveAnswer(answer)) Console.WriteLine("Ваш ответ некорректен, введите Y/N");
+                        } while (!GetPositiveAnswer(answer) & !GetNegativeAnswer(answer));
+                    }
+                }
+                while (!exit);
+            }
+            people.RemoveAt(editPerson.id - 1);
+            people.Insert(editPerson.id - 1, editPerson);
+            System.IO.StreamWriter People = new System.IO.StreamWriter("..\\..\\..\\..\\people.csv", false);
+            foreach (Person person in people)
+            {
+                People.WriteLine($"{person.id};{person.name};{person.birth};{person.death};{person.parentFirst};{person.parentSecond}");
+            }
+            People.Close();
+        }
 
-                if (int.Parse(parents) == 0)
-                {
-                    editPerson.parentFirst = null;
-                    editPerson.parentSecond = null;
-                }
-                if (int.Parse(parents) == 1)
-                {
-                    Person parent = FindPersonMenu();
-                    editPerson.parentFirst = parent.id;
-                }
-                if (int.Parse(parents) == 2)
-                {
-                    Person parent = FindPersonMenu();
-                    editPerson.parentSecond = parent.id;
-                }
-                if (int.Parse(parents) == 3)
-                {
-                    Person parent = FindPersonMenu();
-                    editPerson.parentFirst = parent.id;
-                    parent = FindPersonMenu();
-                    editPerson.parentSecond = parent.id;
-                }
-                if (int.Parse(parents) == 4)
-                {
-                    Person parent = FindPersonMenu();
-                    editPerson.parentFirst = parent.id;
-                    editPerson.parentSecond = null;
-                }
+        static void ExecuteEditParents(string doProgram, Person editPerson, List<Person> people)
+        {
+            if (doProgram == EditFirstP)
+            {
+                Person parent = FindPersonMenu();
+                editPerson.parentFirst = parent.id;
+            }
+            if (doProgram == EditSecondP)
+            {
+                Person parent = FindPersonMenu();
+                editPerson.parentSecond = parent.id;
+            }
+            if (doProgram == EditBothP)
+            {
+                Person parent = FindPersonMenu();
+                editPerson.parentFirst = parent.id;
+                parent = FindPersonMenu();
+                editPerson.parentSecond = parent.id;
+            }
+            if (doProgram == DeleteFirstP)
+            {
+                editPerson.parentFirst = editPerson.parentSecond;
+                editPerson.parentSecond = null;
+            }
+            if (doProgram == DeleteSecondP)
+            {
+                editPerson.parentSecond = null;
+            }
+            if (doProgram == DeleteBothP)
+            {
+                editPerson.parentFirst = null;
+                editPerson.parentSecond = null;
             }
             people.RemoveAt(editPerson.id - 1);
             people.Insert(editPerson.id - 1, editPerson);
