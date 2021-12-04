@@ -2,7 +2,6 @@ using System;
 using System.IO;
 using System.Globalization;
 using System.Collections.Generic;
-using Microsoft.VisualBasic;
 using System.Linq;
 using Newtonsoft.Json;
 
@@ -189,12 +188,6 @@ namespace timetrees
             if (doProgram == LeapYearId) DoGetLeapYear();
             if (doProgram == WritePeopleId) DoWritePeople();
             if (doProgram == WriteEventId) DoWriteEvent();
-
-            if (doProgram == EditName) ;
-            if (doProgram == EditBirth) ;
-            if (doProgram == EditDeath) ;
-            if (doProgram == EditParents) ;
-
             if (doProgram == ExitId) DoExit();
         }
 
@@ -300,7 +293,7 @@ namespace timetrees
             string timeLineFile = "..\\..\\..\\..\\timeline.csv";
             TimelineEvent[] timeLineData = ReadTimelineData(timeLineFile);
             (int years, int months, int days) = DeltaDate(timeLineData);
-            Console.WriteLine($"ћежду макс и мин датами прошло: лет: {years}, мес€цев: {months} дней: {days}");
+            Console.WriteLine($"ћежду макс и мин датами прошло: лет: {years} мес€цев: {months} дней: {days}");
 
         }
 
@@ -308,7 +301,6 @@ namespace timetrees
         {
             (DateTime maxDate, DateTime minDate) = FindMinAndMaxDate(timeline);
             TimeSpan delta = maxDate - minDate; 
-            //Console.WriteLine(delta);
             DateTime diffdate = new DateTime() + delta;
             diffdate = diffdate.AddYears(-1);
             diffdate = diffdate.AddMonths(-1);
@@ -446,9 +438,14 @@ namespace timetrees
                 {
                     Console.BackgroundColor = ConsoleColor.Magenta;
                 }
-                if (person.death != null) Console.WriteLine($"{person.id}\t"+$"{person.name}\t"+$"{person.birth}\t"+$"{person.death}");
-                else Console.WriteLine($"{person.id}\t" + $"{person.name}\t" + $"{person.birth}\t" + $"жив");
-
+                if (person.death != null)
+                {
+                    Console.WriteLine($"{person.id}\t" + $"{person.name}\t" + $"{person.birth:D}\t" + $"{person.death:D}");
+                }
+                else
+                {
+                    Console.WriteLine($"{person.id}\t" + $"{person.name}\t" + $"{person.birth:D}\t" + $"жив");
+                }
                 Console.BackgroundColor = ConsoleColor.Black;
             }
         }
@@ -458,10 +455,7 @@ namespace timetrees
             List<Person> people = ReadListPersons();
             Person editPerson = FindPersonMenu();
             Console.Clear();
-            Console.WriteLine($"{editPerson.name}\t{editPerson.birth}\t{editPerson.death}");
-            Console.WriteLine($"ѕервый родитель: {people[personOneParent].name}\t {people[personOneParent].birth}\t {people[personOneParent].death}");
-            Console.WriteLine($"¬торой родитель: {people[personTwoParent].name}\t {people[personTwoParent].birth}\t {people[personTwoParent].death}");
-
+   
             List<MenuItem> editMenu = new List<MenuItem>
             {
                 new MenuItem {Id = EditName,    Text = "»зменить им€", IsSelected = true},
@@ -472,8 +466,12 @@ namespace timetrees
             };
             bool exit = false;
             do
-            {
+            {      
                 DrawMenu(editMenu);
+                Console.WriteLine();
+                Console.WriteLine($"{editPerson.name}\t{editPerson.birth:D}\t{editPerson.death:D}");
+                Console.WriteLine($"ѕервый родитель: {people[personOneParent].name}\t {people[personOneParent].birth:D}\t {people[personOneParent].death:D}");
+                Console.WriteLine($"¬торой родитель: {people[personTwoParent].name:D}\t {people[personTwoParent].birth:D}\t {people[personTwoParent].death:D}");
                 ConsoleKeyInfo keyInfo = Console.ReadKey(true);
                 if (keyInfo.Key == ConsoleKey.DownArrow) MenuSelectNext(editMenu);
                 if (keyInfo.Key == ConsoleKey.UpArrow) MenuSelectPrevious(editMenu);
@@ -481,19 +479,17 @@ namespace timetrees
                 {
                     var selectedItem = editMenu.First(x => x.IsSelected);
                     ExecuteEdit(selectedItem.Id, editPerson, people);
-                    Console.WriteLine("’отите продолжить? Y/N");
+                    Console.WriteLine("’отите продолжить редактирование? Y/N");
                     string answer;
                     do
                     {
                         answer = Console.ReadLine();
-                        if (GetNegativeAnswer(answer)) DoExit();
+                        if (GetNegativeAnswer(answer)) return;
                         if (!GetPositiveAnswer(answer)) Console.WriteLine("¬аш ответ некорректен, введите Y/N");
                     } while (!GetPositiveAnswer(answer) & !GetNegativeAnswer(answer));
                 }
             }
-            while (!exit);
-
-           
+            while (!exit);       
         }
 
         static void ExecuteEdit(string doProgram, Person editPerson, List<Person> people)
@@ -719,7 +715,6 @@ namespace timetrees
             }
             Event.WriteLine();
             Event.Close();   
-      
         }
 
         static DateTime GetTrueDateTime()
@@ -744,9 +739,9 @@ namespace timetrees
             DateTime date;
             if (!DateTime.TryParseExact(value, "yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out date))
             {
-                if (!DateTime.TryParseExact(value, "yyyy-mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out date))
+                if (!DateTime.TryParseExact(value, "mm-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out date))
                 {
-                    if (!DateTime.TryParseExact(value, "yyyy-mm-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out date))
+                    if (!DateTime.TryParseExact(value, "dd-mm-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out date))
                     {
                         return DateTime.MinValue;
                     }
