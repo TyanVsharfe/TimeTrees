@@ -12,5 +12,6 @@ namespace timetrees
         public DateTime? death;
         public int? parentFirst;
         public int? parentSecond;
+        public List<Person> parents;
     }
 }

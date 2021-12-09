@@ -49,7 +49,7 @@ namespace timetrees
                 }
                 else person.death = null;
                 if ((parts.Length >= 5) && (parts[personOneParent] != ""))
-                {
+                {                
                     person.parentFirst = int.Parse(parts[personOneParent]);
                 }
                 else person.parentFirst = null;

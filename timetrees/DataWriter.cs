@@ -38,14 +38,14 @@ namespace timetrees
             if (int.Parse(parents) == 1)
             {
                 Person parent = PersonSearchMenu.FindPersonMenu();
-                person.parentFirst = parent.id;
+                person.parents.Add(parent);
             }
             if (int.Parse(parents) == 2)
             {
                 Person parent = PersonSearchMenu.FindPersonMenu();
-                person.parentFirst = parent.id;
+                person.parents.Add(parent); ;
                 parent = PersonSearchMenu.FindPersonMenu();
-                person.parentSecond = parent.id;
+                person.parents.Add(parent);
             }
 
             System.IO.StreamWriter People = new System.IO.StreamWriter("..\\..\\..\\..\\people.csv", true);

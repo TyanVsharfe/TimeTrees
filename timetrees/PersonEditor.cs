@@ -40,8 +40,8 @@ namespace timetrees
                 MenuTemplate.DrawMenu(editMenu);
                 Console.WriteLine();
                 Console.WriteLine($"{editPerson.name}\t{editPerson.birth:D}\t{editPerson.death:D}");
-                Console.WriteLine($"Первый родитель: {people[DataReader.personOneParent].name}\t   {people[DataReader.personOneParent].birth:D}\t {people[DataReader.personOneParent].death:D}");
-                Console.WriteLine($"Второй родитель: {people[DataReader.personTwoParent].name}\t   {people[DataReader.personTwoParent].birth:D}\t {people[DataReader.personTwoParent].death:D}");
+                Console.WriteLine($"Первый родитель: {editPerson.parents[0].name}\t   {editPerson.parents[0].birth:D}\t {editPerson.parents[0].death:D}");
+                Console.WriteLine($"Второй родитель: {editPerson.parents[1].name}\t   {editPerson.parents[1].birth:D}\t {editPerson.parents[1].death:D}");
                 ConsoleKeyInfo keyInfo = Console.ReadKey(true);
                 if (keyInfo.Key == ConsoleKey.DownArrow) MenuTemplate.MenuSelectNext(editMenu);
                 if (keyInfo.Key == ConsoleKey.UpArrow) MenuTemplate.MenuSelectPrevious(editMenu);
@@ -117,19 +117,19 @@ namespace timetrees
             if (doProgram == EditFirstP)
             {
                 Person parent = PersonSearchMenu.FindPersonMenu();
-                editPerson.parentFirst = parent.id;
+                editPerson.parents.Add(parent);
             }
             if (doProgram == EditSecondP)
             {
                 Person parent = PersonSearchMenu.FindPersonMenu();
-                editPerson.parentSecond = parent.id;
+                editPerson.parents.Add(parent);
             }
             if (doProgram == EditBothP)
             {
                 Person parent = PersonSearchMenu.FindPersonMenu();
-                editPerson.parentFirst = parent.id;
+                editPerson.parents.Add(parent);
                 parent = PersonSearchMenu.FindPersonMenu();
-                editPerson.parentSecond = parent.id;
+                editPerson.parents.Add(parent);
             }
             if (doProgram == DeleteFirstP)
             {
@@ -150,7 +150,7 @@ namespace timetrees
             System.IO.StreamWriter People = new System.IO.StreamWriter("..\\..\\..\\..\\people.csv", false);
             foreach (Person person in people)
             {
-                People.WriteLine($"{person.id};{person.name};{person.birth};{person.death};{person.parentFirst};{person.parentSecond}");
+                People.WriteLine($"{person.id};{person.name};{person.birth};{person.death};{person.parents[0]};{person.parents[1]}");
             }
             People.Close();
         }
