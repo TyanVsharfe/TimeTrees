@@ -1,158 +1,66 @@
 using System;
 using System.IO;
 using System.Globalization;
-using Newtonsoft;
 using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json;
 
 namespace timetrees
 {
     class Program
-    {  
-        const int personIdIndex    = 0;
-        const int personNameIndex  = 1;
-        const int personBirthIndex = 2;
-        const int personDeathIndex = 3;
-
-        const int timelineDateIndex        = 0;
-        const int timelineDescriptionIndex = 1;
-
-        struct Person
-        {
-            public int      id;
-            public string   name;
-            public DateTime birth;
-            public DateTime death;
-        }
-
-        struct TimelineEvent
-        {
-            public DateTime time;
-            public string   description;
-        }
+    {
+        private const string DeltaId       = "delta";
+        private const string AddPersonId   = "addP";
+        private const string AddEventId    = "addE";
+        private const string EditPeopleId  = "edit";
+        private const string LeapYearId    = "leap";
+        private const string WritePeopleId = "writeP";
+        private const string WriteEventId  = "writeE";
+        private const string ExitId        = "exit";
 
         static void Main(string[] args)
         {
-            string timeLineFile = "..\\..\\..\\..\\timeline.csv";
-            string peopleFile   = "..\\..\\..\\..\\people.csv";
-            string timeLineFileJson = "..\\..\\..\\..\\timeline.json";
-            string peopleFileJson = "..\\..\\..\\..\\people.json";
-            TimelineEvent[] timeLineData = ReadTimelineData(timeLineFile);
-            Person[]        peopleData   = ReadPersonData(peopleFile);
-            //Console.WriteLine(FindMinAndMaxDate(timeLineData));
-            //Console.WriteLine("");
-            (int years, int months, int days) = DeltaDate(timeLineData);
-            Console.WriteLine($"Между макс и мин датами прошло: лет: {years}, месяцев: {months} дней: {days}");
-            Console.WriteLine("");
-            Console.WriteLine("Имена людей, которые родились в високосный год и их возраст не более 20 лет: ");
-            GetLeapYear(peopleData);
-        }
-
-        static string[][] ReadData(string path)
-        {
-            string[] data = File.ReadAllLines(path);
-            string[][] splitData = new string[data.Length][];
-            for (int i = 0; i < data.Length; i++)
+            Console.CursorVisible = false;
+            List<MenuItem> menu = new List<MenuItem>
             {
-                var line = data[i]; // "1; Имя; 2000-06-06
-                string[] parts = line.Split(";"); //["1", "Имя 1", "2000-06-06"]
-                splitData[i] = parts;
-            }
-            return splitData;
-        }
-
-        static Person[] ReadPersonData(string path)
-        {
-            string[][] data = ReadData(path);
-            Person[] people = new Person[data.Length];
-            for (int i = 0; i < data.Length; i++)
+                new MenuItem {Id = DeltaId,         Text = "Найти дельту дат между событиями", IsSelected = true},
+                new MenuItem {Id = AddPersonId,     Text = "Добавить человека"},
+                new MenuItem {Id = AddEventId,      Text = "Добавить событие" },
+                new MenuItem {Id = EditPeopleId,    Text = "Отредактировать данные человека"},
+                new MenuItem {Id = LeapYearId,      Text = "Найти людей, родившихся в високосный год"},
+                new MenuItem {Id = WritePeopleId,   Text = "Вывести всех людей в списке"},
+                new MenuItem {Id = WriteEventId,    Text = "Вывести все события в списке"},
+                new MenuItem {Id = ExitId,          Text = "Выход"}
+            };
+            bool exit = false;
+            do
             {
-                var parts = data[i];
-                Person person = new Person();
-                person.id = int.Parse(parts[personIdIndex]);
-                person.name = parts[personNameIndex];
-                person.birth = DateTime.Parse(parts[personBirthIndex]);
-                if (parts.Length == 4)
+                MenuTemplate.DrawMenu(menu);
+                ConsoleKeyInfo keyInfo = Console.ReadKey(true);
+                if (keyInfo.Key == ConsoleKey.DownArrow) MenuTemplate.MenuSelectNext(menu);
+                if (keyInfo.Key == ConsoleKey.UpArrow) MenuTemplate.MenuSelectPrevious(menu);
+                if (keyInfo.Key == ConsoleKey.Enter)
                 {
-                    person.death = DateTime.Parse(parts[personDeathIndex]);
+                    var selectedItem = menu.First(x => x.IsSelected);
+                    Execute(selectedItem.Id);
+                    Console.WriteLine("Хотите продолжить? Y/N");
+                    if (!AnswerLogic.GetAnswer()) Exit.DoExit();
                 }
-                people[i] = person;
             }
-            return people;
+            while (!exit);
         }
 
-        static TimelineEvent[] ReadTimelineData(string path)
+        static void Execute(string doProgram)
         {
-            string[][] data = ReadData(path);
-            TimelineEvent[] timelineEvent = new TimelineEvent[data.Length];
-            for (int i = 0; i<data.Length; i++)
-            {
-                var parts = data[i];
-                TimelineEvent timeEvent = new TimelineEvent();
-                timeEvent.time = DateTime.Parse(parts[timelineDateIndex]);
-                timeEvent.description = parts[timelineDescriptionIndex];
-                timelineEvent[i] = timeEvent;
-            }
-            return timelineEvent;
-        }
-
-        static (DateTime, DateTime) FindMinAndMaxDate(TimelineEvent[] timeline)
-        {
-            DateTime minDate = DateTime.MaxValue;
-            DateTime maxDate = DateTime.MinValue;
-            foreach (var timeDate in timeline)
-            {
-                DateTime date = timeDate.time;
-                if (date < minDate) minDate = date;
-                if (date > maxDate) maxDate = date;
-            }
-            return (maxDate, minDate);
-        }
-
-        static (int, int, int) DeltaDate(TimelineEvent[] timeline)
-        {
-            (DateTime maxDate, DateTime minDate) = FindMinAndMaxDate(timeline);
-            TimeSpan delta = maxDate - minDate; 
-            //Console.WriteLine(delta);
-            DateTime diffdate = new DateTime() + delta;
-            diffdate = diffdate.AddYears(-1);
-            diffdate = diffdate.AddMonths(-1);
-            diffdate = diffdate.AddDays(-3);
-            return (diffdate.Year,diffdate.Month,diffdate.Day);
-        }
-
-        static void GetLeapYear(Person[] peopleData)
-        {
-            DateTime nowDate = DateTime.Now;
-            foreach (var person in peopleData)
-            {
-                int age;
-                DateTime birth = person.birth;
-                DateTime deathDate = DateTime.MinValue;
-                if (person.death == null) deathDate = DateTime.MinValue; else deathDate = person.death;
-                if (deathDate == null)
-                {
-                    age = nowDate.Year - birth.Year;
-                    if (DateTime.Now.DayOfYear < birth.DayOfYear) age++;   //на случай, если день рождения уже прошёл
-                }
-                else
-                {
-                    age = deathDate.Year - birth.Year;
-                    if (deathDate.DayOfYear < birth.DayOfYear) age++;   //на случай, если день рождения уже прошёл
-                }              
-                if ((DateTime.IsLeapYear(birth.Year)) & (age < 20)) Console.WriteLine(person.name);
-            }
-        }
-        static Person[] ReadPeopleFromJson(string path)
-        {
-            string json = File.ReadAllText(path);
-            return JsonConvert.DeserializeObject<Person[]>(json);
-        }
-
-        static void WritePeopleFromJson(string path, Person[] people)
-        {
-            string json = JsonConvert.SerializeObject(people);
-            File.WriteAllText(path,json);
+            Console.Clear();
+            if (doProgram == DeltaId)       DeltaTimelineEvents.WriteDeltaDate();
+            if (doProgram == AddPersonId)   DataWriter.WritePerson();
+            if (doProgram == AddEventId)    DataWriter.WriteEvent();
+            if (doProgram == EditPeopleId)  PersonEditor.EditPerson();
+            if (doProgram == LeapYearId)    LeapYearPersons.DoGetLeapYear();
+            if (doProgram == WritePeopleId) DataWriter.ShowPeople();
+            if (doProgram == WriteEventId)  DataWriter.ShowEvent();
+            if (doProgram == ExitId)        Exit.DoExit();
         }
     }
 }
