@@ -20,6 +20,13 @@ namespace timetrees
 
         static void Main(string[] args)
         {
+            FIleReader.ReadTimelineFromJson();
+            FIleReader.ReadPeopleFromJson();
+            WorkMenu();          
+        }
+
+        static void WorkMenu()
+        {
             Console.CursorVisible = false;
             List<MenuItem> menu = new List<MenuItem>
             {
@@ -43,8 +50,13 @@ namespace timetrees
                 {
                     var selectedItem = menu.First(x => x.IsSelected);
                     Execute(selectedItem.Id);
+                    FileWriter.WritePeopleToJson();
+                    FileWriter.WriteTimelineToJson();
                     Console.WriteLine("Хотите продолжить? Y/N");
-                    if (!AnswerLogic.GetAnswer()) Exit.DoExit();
+                    if (!AnswerLogic.GetAnswer())
+                    {
+                        Exit.DoExit();
+                    }
                 }
             }
             while (!exit);
@@ -54,12 +66,12 @@ namespace timetrees
         {
             Console.Clear();
             if (doProgram == DeltaId)       DeltaTimelineEvents.WriteDeltaDate();
-            if (doProgram == AddPersonId)   DataWriter.WritePerson();
-            if (doProgram == AddEventId)    DataWriter.WriteEvent();
+            if (doProgram == AddPersonId)   AddMenu.WritePerson();
+            if (doProgram == AddEventId)    AddMenu.WriteEvent();
             if (doProgram == EditPeopleId)  PersonEditor.EditPerson();
             if (doProgram == LeapYearId)    LeapYearPersons.DoGetLeapYear();
-            if (doProgram == WritePeopleId) DataWriter.ShowPeople();
-            if (doProgram == WriteEventId)  DataWriter.ShowEvent();
+            if (doProgram == WritePeopleId) MenuTemplate.ShowPeople();
+            if (doProgram == WriteEventId)  MenuTemplate.ShowEvent();
             if (doProgram == ExitId)        Exit.DoExit();
         }
     }

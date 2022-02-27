@@ -11,27 +11,23 @@ namespace timetrees
     {
         public static void WriteDeltaDate()
         {
-            List<TimelineEvent> timeLineData = DataReader.ReadListTimelineData();
-            (int years, int months, int days) = DeltaDate(timeLineData);
+            (int years, int months, int days) = DeltaDate();
             Console.WriteLine($"Между макс и мин датами прошло: лет: {years} месяцев: {months} дней: {days}");
         }
             
-        static (int, int, int) DeltaDate(List<TimelineEvent> timeline)
+        static (int, int, int) DeltaDate()
         {
-            (DateTime maxDate, DateTime minDate) = FindMinAndMaxDate(timeline);
+            (DateTime maxDate, DateTime minDate) = FindMinAndMaxDate();
             TimeSpan delta = maxDate - minDate;
             DateTime diffdate = new DateTime() + delta;
-            diffdate = diffdate.AddYears(-1);
-            diffdate = diffdate.AddMonths(-1);
-            diffdate = diffdate.AddDays(-3);
-            return (diffdate.Year, diffdate.Month, diffdate.Day);
+            return (diffdate.Year - 1, diffdate.Month - 1, diffdate.Day - 1);
         }
 
-        static (DateTime, DateTime) FindMinAndMaxDate(List<TimelineEvent> timeline)
+        static (DateTime, DateTime) FindMinAndMaxDate()
         {
             DateTime minDate = DateTime.MaxValue;
             DateTime maxDate = DateTime.MinValue;
-            foreach (var timeDate in timeline)
+            foreach (var timeDate in DataRepo.TimelineRepo)
             {
                 DateTime date = timeDate.time;
                 if (date < minDate) minDate = date;

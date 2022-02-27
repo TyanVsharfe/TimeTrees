@@ -8,5 +8,6 @@ namespace timetrees
     {
         public DateTime time;
         public string description;
+        public List<Person> participants = new();
     }
 }

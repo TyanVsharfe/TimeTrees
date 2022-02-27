@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="images\connection.png" />
+    <None Remove="images\person.png" />
+    <None Remove="person.png" />
+    <None Remove="person.svg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="images\connection.png" />
+    <Resource Include="images\person.png" />
+  </ItemGroup>
+
+</Project>

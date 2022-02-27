@@ -4,7 +4,7 @@ using System.Globalization;
 
 namespace timetrees
 {
-    class ValidationCheck
+    public class ValidationCheck
     {
         public static DateTime GetTrueDateTime()
         {

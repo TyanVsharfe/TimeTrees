@@ -1,9 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
-VisualStudioVersion = 16.0.31624.102
+VisualStudioVersion = 16.0.32126.315
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "timetrees", "timetrees.csproj", "{F73A6FA3-BAFA-440A-B76D-A4ED05071B1E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Timetrees.Console", "Timetrees.Console.csproj", "{F73A6FA3-BAFA-440A-B76D-A4ED05071B1E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TimeTrees.Core", "..\TimeTrees.Core\TimeTrees.Core.csproj", "{856CBACF-1752-4A5E-A6A4-CDCD891DAD57}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TimeTrees.Desktop", "..\TimeTrees.Desktop\TimeTrees.Desktop.csproj", "{8AEA20D7-4EB0-4156-84DC-E140CC25B995}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +19,14 @@ Global
 		{F73A6FA3-BAFA-440A-B76D-A4ED05071B1E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F73A6FA3-BAFA-440A-B76D-A4ED05071B1E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F73A6FA3-BAFA-440A-B76D-A4ED05071B1E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{856CBACF-1752-4A5E-A6A4-CDCD891DAD57}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{856CBACF-1752-4A5E-A6A4-CDCD891DAD57}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{856CBACF-1752-4A5E-A6A4-CDCD891DAD57}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{856CBACF-1752-4A5E-A6A4-CDCD891DAD57}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8AEA20D7-4EB0-4156-84DC-E140CC25B995}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8AEA20D7-4EB0-4156-84DC-E140CC25B995}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8AEA20D7-4EB0-4156-84DC-E140CC25B995}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8AEA20D7-4EB0-4156-84DC-E140CC25B995}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

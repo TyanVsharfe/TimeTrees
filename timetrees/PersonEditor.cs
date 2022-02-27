@@ -22,7 +22,6 @@ namespace timetrees
 
         public static void EditPerson() //сократить, не проверил все остальное
         {
-            List<Person> people = DataReader.ReadListPersons();
             Person editPerson = PersonSearchMenu.FindPersonMenu();
             Console.Clear();
 
@@ -40,15 +39,15 @@ namespace timetrees
                 MenuTemplate.DrawMenu(editMenu);
                 Console.WriteLine();
                 Console.WriteLine($"{editPerson.name}\t{editPerson.birth:D}\t{editPerson.death:D}");
-                Console.WriteLine($"Первый родитель: {editPerson.parents[0].name}\t   {editPerson.parents[0].birth:D}\t {editPerson.parents[0].death:D}");
-                Console.WriteLine($"Второй родитель: {editPerson.parents[1].name}\t   {editPerson.parents[1].birth:D}\t {editPerson.parents[1].death:D}");
+                //Console.WriteLine($"Первый родитель: {editPerson.parents[0].name}\t   {editPerson.parents[0].birth:D}\t {editPerson.parents[0].death:D}");
+                //Console.WriteLine($"Второй родитель: {editPerson.parents[1].name}\t   {editPerson.parents[1].birth:D}\t {editPerson.parents[1].death:D}");
                 ConsoleKeyInfo keyInfo = Console.ReadKey(true);
                 if (keyInfo.Key == ConsoleKey.DownArrow) MenuTemplate.MenuSelectNext(editMenu);
                 if (keyInfo.Key == ConsoleKey.UpArrow) MenuTemplate.MenuSelectPrevious(editMenu);
                 if (keyInfo.Key == ConsoleKey.Enter)
                 {
                     var selectedItem = editMenu.First(x => x.IsSelected);
-                    ExecuteEdit(selectedItem.Id, editPerson, people);
+                    ExecuteEdit(selectedItem.Id, editPerson, DataRepo.PeopleRepo);
                     Console.WriteLine("Хотите продолжить редактирование? Y/N");
                     if (!AnswerLogic.GetAnswer()) break;
                 }
@@ -104,12 +103,7 @@ namespace timetrees
             }
             people.RemoveAt(editPerson.id - 1);
             people.Insert(editPerson.id - 1, editPerson);
-            System.IO.StreamWriter People = new System.IO.StreamWriter("..\\..\\..\\..\\people.csv", false);
-            foreach (Person person in people)
-            {
-                People.WriteLine($"{person.id};{person.name};{person.birth};{person.death};{person.parentFirst};{person.parentSecond}");
-            }
-            People.Close();
+            DataRepo.PeopleRepo.Add(editPerson);
         }
 
         static void ExecuteEditParents(string doProgram, Person editPerson, List<Person> people)
@@ -133,17 +127,17 @@ namespace timetrees
             }
             if (doProgram == DeleteFirstP)
             {
-                editPerson.parentFirst = editPerson.parentSecond;
-                editPerson.parentSecond = null;
+                editPerson.parents.RemoveRange(1, 1);
+                editPerson.parents.Insert(0, editPerson.parents[1]);
+                editPerson.parents.RemoveRange(2, 1);
             }
             if (doProgram == DeleteSecondP)
             {
-                editPerson.parentSecond = null;
+                editPerson.parents.RemoveRange(2,1);
             }
             if (doProgram == DeleteBothP)
             {
-                editPerson.parentFirst = null;
-                editPerson.parentSecond = null;
+                editPerson.parents.Clear();
             }
             people.RemoveAt(editPerson.id - 1);
             people.Insert(editPerson.id - 1, editPerson);

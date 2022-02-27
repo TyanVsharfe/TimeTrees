@@ -10,8 +10,6 @@ namespace timetrees
         public string name;
         public DateTime birth;
         public DateTime? death;
-        public int? parentFirst;
-        public int? parentSecond;
-        public List<Person> parents;
+        public List<Person> parents = new(2);
     }
 }
