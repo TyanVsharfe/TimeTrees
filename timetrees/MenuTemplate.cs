@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace timetrees
@@ -65,6 +67,40 @@ namespace timetrees
                 Console.Write(new string(' ', Console.WindowWidth));
             }
             Console.SetCursorPosition(0, 0);
+        }
+
+        public static void ShowPeople()
+        {
+   
+            for (var i = 0; i < DataRepo.PeopleRepo.Count; i++)
+            {
+                Person person = DataRepo.PeopleRepo[i];
+                if (person.death != null)
+                {
+                    Console.WriteLine($"{person.id}\t" + $"{person.name}\t" + $"{person.birth:d}\t" + $"{person.death:d}");
+                }
+                else
+                {
+                    Console.WriteLine($"{person.id}\t" + $"{person.name}\t" + $"{person.birth:d}\t" + $"жив");
+                }
+            }
+        }
+
+        public static void ShowEvent()
+        {
+            foreach (TimelineEvent timeline in DataRepo.TimelineRepo)
+            {
+                Console.WriteLine($"Дата: {timeline.time:d}");
+                Console.WriteLine($"Описание: {timeline.description}");
+                Console.WriteLine($"Участники:");
+                if (timeline.participants.Count == 0)
+                    Console.Write($"Участники: нет");
+                else
+                    foreach (var participant in timeline.participants)
+                    {
+                        Console.WriteLine($"{participant.name} {participant.birth:d}");
+                    }
+            }
         }
     }
 }

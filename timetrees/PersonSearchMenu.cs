@@ -4,11 +4,11 @@ using System.Text;
 
 namespace timetrees
 {
-    class PersonSearchMenu
+    public class PersonSearchMenu
     {
         public static Person FindPersonMenu()
         {
-            List<Person> people = DataReader.ReadListPersons();
+            List<Person> people = DataRepo.PeopleRepo;
             List<Person> found = new List<Person>();
             string name = string.Empty;
             int selectedIndex = 0;

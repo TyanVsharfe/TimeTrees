@@ -1,0 +1,26 @@
+{
+  "Version": 1,
+  "ProjectMap": {
+    "f73a6fa3-bafa-440a-b76d-a4ed05071b1e": {
+      "ProjectGuid": "f73a6fa3-bafa-440a-b76d-a4ed05071b1e",
+      "DisplayName": "Timetrees.Console",
+      "ColorIndex": 0
+    },
+    "3551cd6e-66eb-4417-9d85-e22492053d86": {
+      "ProjectGuid": "3551cd6e-66eb-4417-9d85-e22492053d86",
+      "DisplayName": "TimeTrees.Desktop",
+      "ColorIndex": 1
+    },
+    "856cbacf-1752-4a5e-a6a4-cdcd891dad57": {
+      "ProjectGuid": "856cbacf-1752-4a5e-a6a4-cdcd891dad57",
+      "DisplayName": "TimeTrees.Core",
+      "ColorIndex": 2
+    },
+    "a2fe74e1-b743-11d0-ae1a-00a0c90fffc3": {
+      "ProjectGuid": "a2fe74e1-b743-11d0-ae1a-00a0c90fffc3",
+      "DisplayName": "Miscellaneous Files",
+      "ColorIndex": -1
+    }
+  },
+  "NextColorIndex": 3
+}
