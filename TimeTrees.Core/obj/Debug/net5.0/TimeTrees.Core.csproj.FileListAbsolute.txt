@@ -1,0 +1,16 @@
+C:\Users\admin\Desktop\Тестовый репозиторий\timetrees\TimeTrees.Core\bin\Debug\net5.0\TimeTrees.Core.exe
+C:\Users\admin\Desktop\Тестовый репозиторий\timetrees\TimeTrees.Core\bin\Debug\net5.0\TimeTrees.Core.deps.json
+C:\Users\admin\Desktop\Тестовый репозиторий\timetrees\TimeTrees.Core\bin\Debug\net5.0\TimeTrees.Core.runtimeconfig.json
+C:\Users\admin\Desktop\Тестовый репозиторий\timetrees\TimeTrees.Core\bin\Debug\net5.0\TimeTrees.Core.runtimeconfig.dev.json
+C:\Users\admin\Desktop\Тестовый репозиторий\timetrees\TimeTrees.Core\bin\Debug\net5.0\TimeTrees.Core.dll
+C:\Users\admin\Desktop\Тестовый репозиторий\timetrees\TimeTrees.Core\bin\Debug\net5.0\ref\TimeTrees.Core.dll
+C:\Users\admin\Desktop\Тестовый репозиторий\timetrees\TimeTrees.Core\bin\Debug\net5.0\TimeTrees.Core.pdb
+C:\Users\admin\Desktop\Тестовый репозиторий\timetrees\TimeTrees.Core\obj\Debug\net5.0\TimeTrees.Core.csproj.AssemblyReference.cache
+C:\Users\admin\Desktop\Тестовый репозиторий\timetrees\TimeTrees.Core\obj\Debug\net5.0\TimeTrees.Core.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\admin\Desktop\Тестовый репозиторий\timetrees\TimeTrees.Core\obj\Debug\net5.0\TimeTrees.Core.AssemblyInfoInputs.cache
+C:\Users\admin\Desktop\Тестовый репозиторий\timetrees\TimeTrees.Core\obj\Debug\net5.0\TimeTrees.Core.AssemblyInfo.cs
+C:\Users\admin\Desktop\Тестовый репозиторий\timetrees\TimeTrees.Core\obj\Debug\net5.0\TimeTrees.Core.csproj.CoreCompileInputs.cache
+C:\Users\admin\Desktop\Тестовый репозиторий\timetrees\TimeTrees.Core\obj\Debug\net5.0\TimeTrees.Core.dll
+C:\Users\admin\Desktop\Тестовый репозиторий\timetrees\TimeTrees.Core\obj\Debug\net5.0\ref\TimeTrees.Core.dll
+C:\Users\admin\Desktop\Тестовый репозиторий\timetrees\TimeTrees.Core\obj\Debug\net5.0\TimeTrees.Core.pdb
+C:\Users\admin\Desktop\Тестовый репозиторий\timetrees\TimeTrees.Core\obj\Debug\net5.0\TimeTrees.Core.genruntimeconfig.cache

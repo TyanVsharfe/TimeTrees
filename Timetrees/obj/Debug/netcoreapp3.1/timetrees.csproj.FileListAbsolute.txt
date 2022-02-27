@@ -1,0 +1,17 @@
+C:\Users\admin\Desktop\Тестовый репозиторий\timetrees\timetrees\bin\Debug\netcoreapp3.1\timetrees.exe
+C:\Users\admin\Desktop\Тестовый репозиторий\timetrees\timetrees\bin\Debug\netcoreapp3.1\timetrees.deps.json
+C:\Users\admin\Desktop\Тестовый репозиторий\timetrees\timetrees\bin\Debug\netcoreapp3.1\timetrees.runtimeconfig.json
+C:\Users\admin\Desktop\Тестовый репозиторий\timetrees\timetrees\bin\Debug\netcoreapp3.1\timetrees.runtimeconfig.dev.json
+C:\Users\admin\Desktop\Тестовый репозиторий\timetrees\timetrees\bin\Debug\netcoreapp3.1\timetrees.dll
+C:\Users\admin\Desktop\Тестовый репозиторий\timetrees\timetrees\bin\Debug\netcoreapp3.1\timetrees.pdb
+C:\Users\admin\Desktop\Тестовый репозиторий\timetrees\timetrees\obj\Debug\netcoreapp3.1\timetrees.csproj.AssemblyReference.cache
+C:\Users\admin\Desktop\Тестовый репозиторий\timetrees\timetrees\obj\Debug\netcoreapp3.1\timetrees.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\admin\Desktop\Тестовый репозиторий\timetrees\timetrees\obj\Debug\netcoreapp3.1\timetrees.AssemblyInfoInputs.cache
+C:\Users\admin\Desktop\Тестовый репозиторий\timetrees\timetrees\obj\Debug\netcoreapp3.1\timetrees.AssemblyInfo.cs
+C:\Users\admin\Desktop\Тестовый репозиторий\timetrees\timetrees\obj\Debug\netcoreapp3.1\timetrees.csproj.CoreCompileInputs.cache
+C:\Users\admin\Desktop\Тестовый репозиторий\timetrees\timetrees\obj\Debug\netcoreapp3.1\timetrees.dll
+C:\Users\admin\Desktop\Тестовый репозиторий\timetrees\timetrees\obj\Debug\netcoreapp3.1\timetrees.pdb
+C:\Users\admin\Desktop\Тестовый репозиторий\timetrees\timetrees\obj\Debug\netcoreapp3.1\timetrees.genruntimeconfig.cache
+C:\Users\admin\Desktop\Тестовый репозиторий\timetrees\timetrees\bin\Debug\netcoreapp3.1\Newtonsoft.Json.dll
+C:\Users\admin\Desktop\Тестовый репозиторий\timetrees\timetrees\obj\Debug\netcoreapp3.1\timetrees.csproj.CopyComplete
+C:\Users\admin\Desktop\Тестовый репозиторий\timetrees\timetrees\bin\Debug\netcoreapp3.1\PresentationFramework.dll
